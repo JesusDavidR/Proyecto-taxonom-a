@@ -1,0 +1,648 @@
+ <!DOCTYPE html>
+<html>
+  <head>
+    <title>Proyecto</title>
+    <style>
+      html, body { margin: 0; padding: 0; overflow: hidden; }
+    </style>
+  </head>
+  <body>
+  <div id="mynetwork"></div>
+    <script src="js/three.js"></script>
+	<script src="js/controls/OrbitControls.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.js"></script>
+	<script src='js/libs/dat.gui.min.js'></script>
+    <script>
+	
+		var startTime = Date.now();
+		var scene, aspect, camera, renderer, controls, container;
+		var startTime = Date.now();
+		var size = 10;
+			var arrowSize = 1;
+			var divisions = size;
+			var origin = new THREE.Vector3( 0, 0, 0 );
+			var color = new THREE.Color( 0x333333 );
+		  	var colorR = new THREE.Color( 0xAA3333 );
+		  	var colorG = new THREE.Color( 0x33AA33 );
+		  	var colorB = new THREE.Color( 0x333366 );
+		sphere = [];
+		var tec = {ancho: 1, color: 0};	
+		var sound; 
+		var reset = false; 
+		//teclas
+		var Key1 = false;
+        var Key2 = false;
+        var Key3 = false;
+		var Key4 = false;
+        var Key5 = false;
+        var Key6 = false;
+		var Key7 = false;
+        var Key8 = false;
+        var Key9 = false;
+		var Key0 = false;
+
+        var QKey = false;
+        var WKey = false;
+		var EKey = false;
+        var RKey = false;
+        var TKey = false;
+		var YKey = false;
+        var UKey = false;
+        var IKey = false;
+		var OKey = false;
+        var PKey = false;
+
+        var AKey = false;
+		var SKey = false;
+		var MKey = false;
+		var NKey = false;
+		var spcB = false;
+		
+
+
+		
+		
+		var click = false;
+
+		var nodes = [
+{id:0,x:1,y:0,z:1,label:"Node 1",Categoria:"Subfamilia",Info:"Caaninae", url: "https://i.imgur.com/yZ5dbve.png"},
+
+{id:1,x:5,y:5,z:7,label:"Node 2",Categoria:"Tribu",Info:",Canini", url: "https://i.imgur.com/4ParCJ0.png" },
+{id:2,x:5,y:0,z:3,label:"Node 3",Categoria:"Genero",Info:"Nyctereutes", url: "https://i.imgur.com/HeNh2hv.png"}, 
+{id:3,x:5,y:-5,z:5,label:"Node 4",Categoria:"Tribu",Info:"Vulpini", url: "https://i.imgur.com/aQXw0Q4.png"},
+{id:4,x:5,y:-10,z:7,label:"Node 5",Categoria:"Genero",Info:"Urocyon", url: "https://i.imgur.com/JyWg81a.png"},
+
+{id:5,x:7,y:4,z:7,label:"Node 6",Categoria:"Genero",Info:"Canis", url: "https://i.imgur.com/iLgUEdQ.png"}, 
+{id:6,x:7,y:6,z:7,label:"Node 7",Categoria:"Genero",Info:"Lycalopex", url: "https://i.imgur.com/QdvC5eJ.png"},   
+{id:7,x:7,y:-6,z:7,label:"Node 8",Categoria:"Genero",Info:"Nyctereutes",url: "https://i.imgur.com/JPeEPDu.png"},
+{id:8,x:7,y:-4,z:7,label:"Node 9",Categoria:"Genero",Info:"Vulpes", url: "https://i.imgur.com/Bpq1Lj1.png"}, 
+
+{id:9,x:8,y:7,z:8,label:"Node 10",Categoria:"Especie",Info:"Culpaeus", url:"https://i.imgur.com/NIGFM97.png"},
+{id:10,x:9,y:6,z:8,label:"Node 11",Categoria:"Especie",Info:"Vetulus", url: "https://i.imgur.com/EFo6IW7.png"},
+{id:11,x:8,y:5,z:8,label:"Node 12",Categoria:"Especie",Info:"Fulvipes", url:"https://i.imgur.com/0twUWVS.png"},
+
+{id:12,x:6,y:2.5,z:7.5,label:"Node 13",Categoria:"Especie",Info:"Lupus Familiaris", url: "https://i.imgur.com/SR9V5XU.png"},
+{id:13,x:8,y:2.5,z:6,label:"Node 14",Categoria:"Especie",Info:"Lupus", url: "https://i.imgur.com/Daw2ijr.png"},
+{id:14,x:6,y:3,z:6,label:"Node 15",Categoria:"Especie",Info:"Mesomelas", url: "https://i.imgur.com/ab9jiHk.png"},
+{id:15,x:7.5,y:3,z:8,label:"Node 16",Categoria:"Especie",Info:"Latrans", url: "https://i.imgur.com/R0t8UbY.png"},
+
+{id:16,x:8,y:-3.5,z:9,label:"Node 17",Categoria:"Especie",Info:"Vulpes", url: "https://i.imgur.com/VLajIJn.png"},
+{id:17,x:8,y:-4,z:8,label:"Node 18",Categoria:"Especie",Info:"Ruepplii", url: "https://i.imgur.com/kHmBwXU.png"},
+{id:18,x:8,y:-4.5,z:9,label:"Node 19",Categoria:"Especie",Info:"Lagopus", url: "https://i.imgur.com/SY24Y8R.png"},
+
+{id:19,x:8,y:-7,z:9,label:"Node 20",Categoria:"Especie",Info:"Procyonoides",url: "https://i.imgur.com/PphPJVi.png"},
+
+{id:20,x:6,y:-11,z:8,label:"Node 21",Categoria:"Especie",Info:"Littoralis", url: "https://i.imgur.com/fShjDyq.png"},
+{id:21,x:6,y:-9,z:8,label:"Node 22",Categoria:"Especie",Info:"Cinereoargenteus", url: "https://i.imgur.com/KPeNXuH.png"},
+{id:22,x:0,y:1,z:35,label:"Node 22",Categoria:"Especie",Info:"Cinereoargenteus", url: "https://i.imgur.com/KPeNXuH.png"}
+
+		];
+
+		// create an array with edges
+		var edges = [
+		{from: 0, to: 0, Ant: null, Sig: 1},
+		  { from: 0, to: 1, Ant: null, Sig: 1 },
+		   { from: 0, to: 2, Ant: null, Sig: 1 },
+		    { from: 0, to: 3, Ant: null, Sig: 1 },
+			 { from: 0, to: 4, Ant: null, Sig: 1 },
+			 
+			  { from: 1, to: 5, Ant: 1, Sig: 1 },
+			  { from: 1, to: 6, Ant: 1, Sig: 1 },
+			  
+			  { from: 3, to: 7, Ant: 1, Sig: 1 },
+			  { from: 3, to: 8, Ant: 1, Sig: 1 },
+			  
+			  { from: 6, to: 9, Ant: 1, Sig: 1 },
+			  { from: 6, to: 10, Ant: 1, Sig: 1 },
+			  { from: 6, to: 11, Ant: 1, Sig: 1 },
+			  
+			  { from: 5, to: 12, Ant: 1, Sig: 1 },
+			  { from: 5, to: 13, Ant: 1, Sig: 1 },
+			  { from: 5, to: 14, Ant: 1, Sig: 1 },
+			  { from: 5, to: 15, Ant: 1, Sig: 1 },
+			  
+			  { from: 8, to: 16, Ant: 1, Sig: 1 },
+			  { from: 8, to: 17, Ant: 1, Sig: 1 },
+			  { from: 8, to: 18, Ant: 1, Sig: 1 },
+			  
+			  { from: 7, to: 19, Ant: 1, Sig: 1 },
+			  
+			  { from: 4, to: 20, Ant: 1, Sig: 1 },
+			  { from: 4, to: 21, Ant: 1, Sig: 1 }
+		];
+
+
+		var raycaster = new THREE.Raycaster(), INTERSECTED;
+		var mouse = new THREE.Vector2();
+			
+
+	
+		init();
+		animate();
+	
+
+
+	
+		function init(){
+				container = document.createElement( 'div' );
+				document.body.appendChild( container );
+
+				var info = document.createElement( 'div' );
+				info.style.position = 'absolute';
+				info.style.top = '5px';
+				info.style.width = '100%';
+				info.style.textAlign = 'center';
+				info.innerHTML = '<span style="color: #FBAE5C; background-color: #F36523; border-bottom: 1px solid #F36523; padding: 8px 10px; text-transform: uppercase;"><strong>1</strong>: Subfamilia | <strong> 2,4</strong>:  Tribu |<strong> 3,5,6,7,8,9</strong>: Genero | <strong> q,w,e,r,t,y,u,i,o,p,a,s</strong>: Especies | <strong>b,m</strong>: Camara </a></span>';
+				container.appendChild( info );
+				
+				scene = new THREE.Scene();
+			var texture3 = new THREE.TextureLoader();
+            var pared = texture3.load('https://i.imgur.com/qXT6LGx.png');
+			scene.background= pared;
+			aspect = window.innerWidth / window.innerHeight;
+			camera = new THREE.PerspectiveCamera( 45, aspect, 0.1, 1000);
+			renderer = new THREE.WebGLRenderer();
+			renderer.setSize( window.innerWidth, window.innerHeight );
+			document.body.appendChild( renderer.domElement );	
+		
+		
+		
+					//CODIGO DE LAS TECLAS
+			var onKeyDown = function ( event ) {
+				switch ( event.keyCode ) {
+						
+					case 49: // ROTAR X
+						Key1 = true;
+						break;
+					case 50: // ROTAR Y
+						Key2 = true;
+						break;
+                    case 51: // ROTAR Z
+						Key3 = true;
+						break;
+					case 52: // 
+						Key4 = true;
+						break;	
+					case 53: // ROTAR Z
+						Key5 = true;
+						break;
+					case 54: // ROTAR Z
+						Key6 = true;
+						break;
+					case 55: // ROTAR Z
+						Key7 = true;
+						break;
+					case 56: // 
+						Key8 = true;
+						break;	
+					case 57: // ROTAR Z
+						Key9 = true;
+						break;
+					case 48: // ROTAR Z
+						Key0 = true;
+						break;
+
+					case 81: // ROTAR X
+						QKey = true;
+						break;
+					case 87: // ROTAR Y
+						WKey = true;
+						break;
+                    case 69: // ROTAR Z
+						EKey = true;
+						break;
+					case 82: // 
+						RKey = true;
+						break;	
+					case 84: // ROTAR Z
+						TKey = true;
+						break;
+					case 89: // ROTAR Z
+						YKey = true;
+						break;
+					case 85: // ROTAR Z
+						UKey = true;
+						break;
+					case 73: // 
+						IKey = true;
+						break;	
+					case 79: // ROTAR Z
+						OKey = true;
+						break;
+					case 80: // ROTAR Z
+						PKey = true;
+						break;
+
+					case 65: // ROTAR Z
+						AKey = true;
+						break;
+					case 83: // ROTAR Z
+						SKey = true;
+						break;
+					case 77: // ROTAR Z
+						MKey = true;
+						break;
+					case 78: // ROTAR Z
+						window.alert("Use el teclado para ver cada nodo por separado");
+						break;
+					case 66: // ROTAR Z
+						controls = new THREE.OrbitControls( camera, renderer.domElement );
+						break;
+
+					
+				}
+			};	
+
+			var onKeyUp = function ( event ) {
+				switch ( event.keyCode ) {
+					
+				
+					case 49: // ROTAR X
+						Key1 = false;
+						break;
+					case 50: // ROTAR Y
+						Key2 = false;
+						break;
+                    case 51: // ROTAR Z
+						Key3 = false;
+						break;
+					case 52: // 
+						Key4 = false;
+						break;	
+					case 53: // ROTAR Z
+						Key5 = false;
+						break;
+					case 54: // ROTAR Z
+						Key6 = false;
+						break;
+					case 55: // ROTAR Z
+						Key7 = false;
+						break;
+					case 56: // 
+						Key8 = false;
+						break;	
+					case 57: // ROTAR Z
+						Key9 = false;
+						break;
+					case 48: // ROTAR Z
+						Key0 = false;
+						break;
+
+					case 81: // ROTAR X
+						QKey = false;
+						break;
+					case 87: // ROTAR Y
+						WKey = false;
+						break;
+                    case 69: // ROTAR Z
+						EKey = false;
+						break;
+					case 82: // 
+						RKey = false;
+						break;	
+					case 84: // ROTAR Z
+						TKey = false;
+						break;
+					case 89: // ROTAR Z
+						YKey = false;
+						break;
+					case 85: // ROTAR Z
+						UKey = false;
+						break;
+					case 73: // 
+						IKey = false;
+						break;	
+					case 79: // ROTAR Z
+						OKey = false;
+						break;
+					case 80: // ROTAR Z
+						PKey = false;
+						break;
+
+					case 65: // ROTAR Z
+						AKey = false;
+						break;
+					case 83: // ROTAR Z
+						SKey = false;
+						break;
+					case 77: // ROTAR Z
+						MKey = false;
+						break;	
+					case 78: // ROTAR Z
+						NKey = false;
+						break;	
+					case 66: // ROTAR Z
+						spcB = false;
+						break;
+					
+				}
+			};
+			document.addEventListener( 'keydown', onKeyDown, false );
+			document.addEventListener( 'keyup', onKeyUp, false );
+
+
+		
+		
+
+			
+			
+var listener = new THREE.AudioListener();
+camera.add( listener );
+
+// create a global audio source
+sound = new THREE.PositionalAudio ( listener );
+
+var audioLoader = new THREE.AudioLoader();
+audioLoader.load( 'Inf/audio.mp3', function( buffer ) {
+	sound.setBuffer( buffer );
+	sound.setRefDistance( 20 );
+	sound.duration.set(0.5);
+	sound.setVolume( 0.5 );
+	
+});
+			
+			var x = new THREE.Vector3( 1, 0, 0 );
+			var y = new THREE.Vector3( 0, 1, 0 );
+		  	var z = new THREE.Vector3( 0, 0, 1 );
+			
+			
+			var Pelaje = new THREE.TextureLoader().load( 'https://i.imgur.com/VRbMXbd.jpg' );
+			var central = new THREE.Object3D();
+
+			var material2 = new THREE.MeshBasicMaterial( {color: 0xfffff0} );
+			console.log(nodes.length);
+			
+			for (var i=0; i<22;i++){
+
+			var str = nodes[i].Categoria; 
+			switch(str) 
+			{ 
+            case "Subfamilia": 
+                var material = new THREE.MeshBasicMaterial( {color: 0xDF0101, map:Pelaje } ); 
+				var Tam = 1;
+                break; 
+            case "Genero": 
+                var material = new THREE.MeshBasicMaterial( {color: 0x74DF00, map:Pelaje} );
+				var Tam = 0.8;
+                break; 
+            case "Tribu": 
+                var material = new THREE.MeshBasicMaterial( {color: 0xFFBF00, map:Pelaje} );
+				var Tam = 0.6;
+                break; 
+            case "Especie": 
+                var material = new THREE.MeshBasicMaterial( {color: 0xDF01A5, map:Pelaje} );
+				var Tam = 0.4;
+                break; 
+			}
+			var geometry = new THREE.SphereGeometry( Tam, 10, 10 );
+			console.log(nodes[i].Categoria);
+			sphere[i] = new THREE.Mesh(geometry, material);
+			sphere[i].applyMatrix( new THREE.Matrix4().makeTranslation(nodes[i].x, nodes[i].y, nodes[i].z));
+			scene.add( sphere[i] );
+			sphere[i].add(sound);
+			}
+			
+			for(var i=0; i<edges.length; i++){
+			var aristas=[];
+			aristas.push ( new THREE.Vector3( nodes[edges[i].from].x, nodes[edges[i].from].y, nodes[edges[i].from].z));
+			aristas.push ( new THREE.Vector3( nodes[edges[i].to].x,nodes[edges[i].to].y,nodes[edges[i].to].z));
+			
+			var geometria= new THREE.BufferGeometry().setFromPoints(aristas);
+			var lineas= new THREE.Line(geometria, material2);
+			scene.add(lineas);
+			}
+
+			
+		for(var i=0; i < 22; i++){
+		sphere[i].userData = {URL: nodes[i].url};
+			}
+
+			
+var params = {
+  posi: 0,
+
+};
+			
+var gui = new dat.GUI();
+var folder = gui.addFolder('Buscador');
+folder.add(params, "posi", { Zorro_Colorado: 9,Zorro_Hoary: 10,Zorro_Chilote: 11,Perro: 12,Lobo: 13,Chacal: 14,Coyote: 15,Zorro_Rojo: 16,Zorro_de_Arena: 17,Zorro_Artico: 18,Tanuki: 19,Island_Fox: 20,Zorro_Gris: 21} )
+  .name('Especie')
+  .onChange(function() {
+
+  sphere[params.posi].material.color.set("#00BFFF");
+  sphere[edges[params.posi].from].material.color.set("#00BFFF");
+  var aux = [1];
+  var aux2 = edges[params.posi].from;
+  aux[0] = edges[aux2];
+  sphere[aux[0].from].material.color.set("#00BFFF");
+  sphere[0].material.color.set("#00BFFF");
+	});
+folder.open();
+
+
+				camera.position.x = -5;
+			camera.position.y = 1;	 
+		  	camera.position.z = 35;
+			
+		  	camera.lookAt( origin );
+
+    }
+
+			function onWindowResize() {
+
+				camera.aspect = window.innerWidth / window.innerHeight;
+				camera.updateProjectionMatrix();
+
+				renderer.setSize( window.innerWidth, window.innerHeight );
+
+			}
+
+			function onDocumentMouseMove( event ) {
+
+				event.preventDefault();
+
+				mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+				mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+
+			}	
+			
+			function onDocumentMouseDown( event ) {
+				click = true;
+				
+				
+						
+			for (var i=0; i<22;i++){
+
+			var str = nodes[i].Categoria; 
+			switch(str) 
+			{ 
+            case "Subfamilia": 
+                sphere[i].material.color.set("#DF0101"); 
+                break; 
+            case "Genero": 
+                sphere[i].material.color.set("#74DF00" );
+				break; 
+            case "Tribu": 
+                sphere[i].material.color.set("#FFBF00");
+                break; 
+            case "Especie": 
+                sphere[i].material.color.set("#DF01A5");
+                break; 
+			}
+			}	
+				
+				
+
+			}	
+
+	
+    function animate() {
+        render();
+		//controls.update(); // required if controls.enableDamping = true, or if controls.autoRotate = true
+        requestAnimationFrame( animate );
+    }
+    
+    function render(){
+	var dtime = Date.now()-startTime;
+
+		if(Key1){
+			cameraMovement(0);
+
+		}
+
+		if(Key2){
+			cameraMovement(1);
+		}
+
+		if(Key3){
+			cameraMovement(2);
+
+		}
+
+		if(Key4){
+			cameraMovement(3);
+		}
+
+		if(Key5){
+			cameraMovement(4);
+
+		}
+
+		if(Key6){
+			cameraMovement(5);
+		}
+
+		if(Key7){
+			cameraMovement(6);
+
+		}
+
+		if(Key8){
+			cameraMovement(7);
+		}
+
+		if(Key9){
+			cameraMovement(8);
+
+		}
+
+		if(Key0){
+			cameraMovement(9);
+		}
+
+		if(QKey){
+			cameraMovement(10);
+
+		}
+
+		if(WKey){
+			cameraMovement(11);
+		}
+
+		if(EKey){
+			cameraMovement(12);
+
+		}
+
+		if(RKey){
+			cameraMovement(13);
+		}
+
+		if(TKey){
+			cameraMovement(14);
+
+		}
+
+		if(YKey){
+			cameraMovement(15);
+		}
+
+		if(UKey){
+			cameraMovement(16);
+		}
+
+		if(IKey){
+			cameraMovement(17);
+
+		}
+
+		if(OKey){
+			cameraMovement(18);
+		}
+
+		if(PKey){
+			cameraMovement(19);
+
+		}
+
+		if(AKey){
+			cameraMovement(20);
+		}
+
+		if(SKey){
+			cameraMovement(21);
+		}
+		
+		if(MKey){
+			cameraMovement(22);
+		}
+
+
+
+
+
+				raycaster.setFromCamera( mouse, camera );
+
+				var intersects = raycaster.intersectObjects( scene.children );
+
+				if ( intersects.length > 0 && click==true) {
+					sound.play();
+
+					window.open(intersects[0].object.userData.URL);
+					
+				} 
+	
+	
+click = false;
+
+	renderer.render( scene, camera );
+    }
+	
+	
+		function cameraMovement(cameraID){
+		
+		camera.position.x = nodes[cameraID].x;
+		camera.position.y = nodes[cameraID].y;
+		camera.position.z = nodes[cameraID].z + 7;
+
+		
+
+		camera.lookAt(nodes[cameraID].x, nodes[cameraID].y, nodes[cameraID].z);
+	}
+	
+window.addEventListener( 'mousemove', onDocumentMouseMove, false );
+window.addEventListener( 'mousedown', onDocumentMouseDown, false );
+window.requestAnimationFrame(render);
+    </script>
+  </body>
+</html>
